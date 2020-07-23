@@ -6,13 +6,12 @@ class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 //  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Stream<String> get onAuthStateChanged =>
-      _firebaseAuth.onAuthStateChanged.map(
-            (FirebaseUser user) => user?.uid,
+  Stream<String> get onAuthStateChanged => _firebaseAuth.onAuthStateChanged.map(
+        (FirebaseUser user) => user?.uid,
       );
 
   //Get User
-  Future getUser() async{
+  Future getUser() async {
     return await _firebaseAuth.currentUser();
   }
 
@@ -28,13 +27,13 @@ class AuthService {
 
   //Get name
 
-  Future<String> getUserName() async{
+  Future<String> getUserName() async {
     return (await _firebaseAuth.currentUser()).displayName;
   }
 
   // Email & Password Sign Up
-  Future<String> createUserWithEmailAndPassword(String email, String password,
-      String name) async {
+  Future<String> createUserWithEmailAndPassword(
+      String email, String password, String name) async {
     final authResult = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
@@ -43,7 +42,11 @@ class AuthService {
     await updateUserName(name, authResult.user);
     try {
       await authResult.user.sendEmailVerification();
-      return authResult.user.uid;
+      if (authResult.user.isEmailVerified) {
+        return authResult.user.uid;
+      } else {
+        return null;
+      }
     } catch (e) {
       print("An error occured while trying to send email verification");
       print(e.message);
@@ -59,11 +62,11 @@ class AuthService {
     await currentUser.reload();
   }
 
-
-  Future<String> signInWithEmailAndPassword(String email,
-      String password) async {
-    AuthResult result  = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-    if(result.user.isEmailVerified) return result.user.uid;
+  Future<String> signInWithEmailAndPassword(
+      String email, String password) async {
+    AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
+    if (result.user.isEmailVerified) return result.user.uid;
     return 'NO';
   }
 
@@ -74,10 +77,9 @@ class AuthService {
 
   // Reset Password
   Future sendPasswordResetEmail(String email) async {
-    return  await _firebaseAuth.sendPasswordResetEmail(email: email);
+    return await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
   //check verification
-
 
 }

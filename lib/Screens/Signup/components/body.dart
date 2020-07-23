@@ -1,3 +1,4 @@
+import 'package:cov_help/Screens/Signup/components/verification_screen.dart';
 import 'package:cov_help/Screens/Welcome/welcome_screen.dart';
 import 'package:cov_help/services/authentication.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cov_help/services/Provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../../Welcome/welcome_screen.dart';
 
 import '../../constants.dart';
 
@@ -26,11 +28,9 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       theme: ThemeData(
         primaryColor: kPrimaryColor,
         scaffoldBackgroundColor: Colors.white,
-
       ),
       home: Body1(widget._key),
     );
@@ -43,7 +43,8 @@ class indicator extends StatelessWidget {
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-      child: Center(child: SpinKitDoubleBounce(
+      child: Center(
+          child: SpinKitDoubleBounce(
         color: kPrimaryColor,
         size: 50.0,
       )),
@@ -69,28 +70,48 @@ class Body1 extends StatefulWidget {
 }
 
 class _Body1State extends State<Body1> {
+  List<String> blood_group_list1 = [
+    "O+ve",
+    "O-ve",
+    "A+ve",
+    "A-ve",
+    "B+ve",
+    "B-ve",
+    "AB+ve",
+    "AB-ve"
+  ];
 
-  List<String> blood_group_list1 = [ "O+ve", "O-ve", "A+ve", "A-ve", "B+ve", "B-ve", "AB+ve", "AB-ve"];
-
-  List<DropdownMenuItem<String>> blood_group_list = new List<DropdownMenuItem<String>> ();
+  List<DropdownMenuItem<String>> blood_group_list =
+      new List<DropdownMenuItem<String>>();
 
   List<bool> check_list = [false, false, false, false, false];
-  List<Color> bg = [kPrimaryLightColor, kPrimaryLightColor, kPrimaryLightColor, kPrimaryLightColor , kPrimaryLightColor];
-  List<Color> border = [kPrimaryLightColor, kPrimaryLightColor, kPrimaryLightColor, kPrimaryLightColor , kPrimaryLightColor];
+  List<Color> bg = [
+    kPrimaryLightColor,
+    kPrimaryLightColor,
+    kPrimaryLightColor,
+    kPrimaryLightColor,
+    kPrimaryLightColor
+  ];
+  List<Color> border = [
+    kPrimaryLightColor,
+    kPrimaryLightColor,
+    kPrimaryLightColor,
+    kPrimaryLightColor,
+    kPrimaryLightColor
+  ];
   List<Color> text = [null, kPrimaryColor, null, null, null];
 
-  void create_list(){
-    blood_group_list = new List<DropdownMenuItem<String>> ();
-    for(int i = 0; i < blood_group_list1.length; ++i){
-      DropdownMenuItem<String> item1 = DropdownMenuItem<String>(value: blood_group_list1[i],
-          child: Container(
-              child: Text(blood_group_list1[i])
-          )
-      );
+  void create_list() {
+    blood_group_list = new List<DropdownMenuItem<String>>();
+    for (int i = 0; i < blood_group_list1.length; ++i) {
+      DropdownMenuItem<String> item1 = DropdownMenuItem<String>(
+          value: blood_group_list1[i],
+          child: Container(child: Text(blood_group_list1[i])));
       blood_group_list.add(item1);
     }
   }
-  void initState(){
+
+  void initState() {
     create_list();
   }
 
@@ -113,10 +134,8 @@ class _Body1State extends State<Body1> {
   bool log = false;
   bool one = false;
 
-
-
   bool name_checker(String name) {
-    if(name.length > 0) {
+    if (name.length > 0) {
       name = name[0].toUpperCase() + name.substring(1);
       print(name);
       return true;
@@ -128,31 +147,43 @@ class _Body1State extends State<Body1> {
   Widget build(BuildContext context) {
     String uid = "";
 
-    void submit() async {
-
-      try{
+    Future<String> submit() async {
+      try {
         final auth = Provider.of(context).auth;
-        uid = await auth.createUserWithEmailAndPassword(_email, _password, _name);
-        print(uid);
-        one = true;
-      } catch(e){
-        print(e);
-        if(e.message == 'The email address is badly formatted.'){
-          Fluttertoast.showToast(msg: 'Email address badly formatted.');
-        }else if(e.message == 'The email address is already in use by another account.'){
-          Fluttertoast.showToast(msg: 'Email Already exists');
+        uid =
+            await auth.createUserWithEmailAndPassword(_email, _password, _name);
+        if (uid != null) {
+          print(uid);
+          setState(() {
+            one = true;
+          });
+          return uid;
+        } else {
+          setState(() {
+            one = false;
+          });
+          return null;
         }
-        else{
+      } catch (e) {
+        print(e);
+        if (e.message == 'The email address is badly formatted.') {
+          Fluttertoast.showToast(msg: 'Email address badly formatted.');
+        } else if (e.message ==
+            'The email address is already in use by another account.') {
+          Fluttertoast.showToast(msg: 'Email Already exists');
+        } else {
           Fluttertoast.showToast(msg: 'Try Again.');
         }
-
-        one = false;
+        setState(() {
+          one = false;
+        });
+        return null;
       }
     }
 
     final Database = FirebaseDatabase.instance.reference().child('users');
 
-    void writeData () async {
+    void writeData() async {
       print(uid);
       await Database.child(uid).set({
         'name': _name,
@@ -162,10 +193,9 @@ class _Body1State extends State<Body1> {
       log = true;
     }
 
-    void logout() async{
+    void logout() async {
       await Provider.of(context).auth.signOut();
     }
-
 
     Size size = MediaQuery.of(context).size;
     return Background(
@@ -197,8 +227,9 @@ class _Body1State extends State<Body1> {
                   icon: Icons.account_box,
                   hintText: "Name",
                   onChanged: (value) {
-                    if(value.length > 0) check_list[0] = true;
-                    if(value.length > 0 )_name = value[0].toUpperCase()+ value.substring(1);
+                    if (value.length > 0) check_list[0] = true;
+                    if (value.length > 0)
+                      _name = value[0].toUpperCase() + value.substring(1);
                     print(_name);
                   },
                 ),
@@ -218,12 +249,13 @@ class _Body1State extends State<Body1> {
                   ),
                   child: Center(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 0.0),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           isExpanded: true,
                           items: blood_group_list,
-                          onChanged: (_value){
+                          onChanged: (_value) {
                             blood = _value;
                             check_list[1] = true;
                             setState(() {});
@@ -235,7 +267,7 @@ class _Body1State extends State<Body1> {
                                 Icons.local_hospital,
                                 color: text[1],
                               ),
-                              hintText: (check_list[1]) ? blood: 'Blood Group',
+                              hintText: (check_list[1]) ? blood : 'Blood Group',
                               border: InputBorder.none,
                             ),
                           ),
@@ -274,75 +306,65 @@ class _Body1State extends State<Body1> {
                   },
                 ),
                 RoundedButton(
-                  text: "SIGNUP",
-                  press: () async {
-                    if (!(name_checker(_name) && check_list[0])) {
-                      bg[0] = Colors.white;
-                      border[0] = Colors.red;
-                      text[0] = Colors.red;
-                      setState(() {});
-                      _signup[0] = false;
-                    } else {
-                      bg[0] = kPrimaryLightColor;
-                      border[0] = kPrimaryLightColor;
-                      text[0] = kPrimaryColor;
-                      setState(() {});
-                      _signup[0] = true;
-                    }
-                    if (!check_list[1]) {
-                      bg[1] = Colors.white;
-                      border[1] = Colors.red;
-                      text[1] = Colors.red;
-                      setState(() {});
-                      _signup[1] = false;
-                    } else {
-                      bg[1] = kPrimaryLightColor;
-                      border[1] = kPrimaryLightColor;
-                      text[1] = kPrimaryColor;
-                      setState(() {});
-                      _signup[1] = true;
-                    }
-                    if (!check_list[2]) {
-                      bg[2] = Colors.white;
-                      border[2] = Colors.red;
-                      text[2] = Colors.red;
-                      setState(() {});
-                      _signup[2] = false;
-                    } else {
-                      if (!RegExp(
-                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                          .hasMatch(_email)) {
+                    text: "SIGNUP",
+                    press: () async {
+                      if (!(name_checker(_name) && check_list[0])) {
+                        bg[0] = Colors.white;
+                        border[0] = Colors.red;
+                        text[0] = Colors.red;
+                        setState(() {});
+                        _signup[0] = false;
+                      } else {
+                        bg[0] = kPrimaryLightColor;
+                        border[0] = kPrimaryLightColor;
+                        text[0] = kPrimaryColor;
+                        setState(() {});
+                        _signup[0] = true;
+                      }
+                      if (!check_list[1]) {
+                        bg[1] = Colors.white;
+                        border[1] = Colors.red;
+                        text[1] = Colors.red;
+                        setState(() {});
+                        _signup[1] = false;
+                      } else {
+                        bg[1] = kPrimaryLightColor;
+                        border[1] = kPrimaryLightColor;
+                        text[1] = kPrimaryColor;
+                        setState(() {});
+                        _signup[1] = true;
+                      }
+                      if (!check_list[2]) {
                         bg[2] = Colors.white;
                         border[2] = Colors.red;
                         text[2] = Colors.red;
                         setState(() {});
-                        Fluttertoast.showToast(msg: 'Invalid Email Format');
                         _signup[2] = false;
-                        email_valid = false;
                       } else {
-                        email_valid = true;
-                        bg[2] = kPrimaryLightColor;
-                        border[2] = kPrimaryLightColor;
-                        text[2] = kPrimaryColor;
-                        setState(() {});
-                        _signup[2] = true;
+                        if (!RegExp(
+                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(_email)) {
+                          bg[2] = Colors.white;
+                          border[2] = Colors.red;
+                          text[2] = Colors.red;
+                          setState(() {});
+                          Fluttertoast.showToast(msg: 'Invalid Email Format');
+                          _signup[2] = false;
+                          email_valid = false;
+                        } else {
+                          email_valid = true;
+                          bg[2] = kPrimaryLightColor;
+                          border[2] = kPrimaryLightColor;
+                          text[2] = kPrimaryColor;
+                          setState(() {});
+                          _signup[2] = true;
+                        }
                       }
-                    }
 
-                    if (_password.length < 6) {
-                      if (email_valid) Fluttertoast.showToast(
-                          msg: 'Password should be of atleast 6 digits');
-                      bg[3] = Colors.white;
-                      border[3] = Colors.red;
-                      text[3] = Colors.red;
-                      bg[4] = Colors.white;
-                      border[4] = Colors.red;
-                      text[4] = Colors.red;
-                      setState(() {});
-                      _signup[3] = false;
-                      _signup[4] = false;
-                    } else {
-                      if (_password != _confirm) {
+                      if (_password.length < 6) {
+                        if (email_valid)
+                          Fluttertoast.showToast(
+                              msg: 'Password should be of atleast 6 digits');
                         bg[3] = Colors.white;
                         border[3] = Colors.red;
                         text[3] = Colors.red;
@@ -352,49 +374,76 @@ class _Body1State extends State<Body1> {
                         setState(() {});
                         _signup[3] = false;
                         _signup[4] = false;
-                        if (email_valid) Fluttertoast.showToast(
-                            msg: 'Passwords do not match');
                       } else {
-                        bg[3] = kPrimaryLightColor;
-                        border[3] = kPrimaryLightColor;
-                        text[3] = kPrimaryColor;
-                        bg[4] = kPrimaryLightColor;
-                        border[4] = kPrimaryLightColor;
-                        text[4] = kPrimaryColor;
-                        setState(() {});
-                        _signup[3] = true;
-                        _signup[4] = true;
+                        if (_password != _confirm) {
+                          bg[3] = Colors.white;
+                          border[3] = Colors.red;
+                          text[3] = Colors.red;
+                          bg[4] = Colors.white;
+                          border[4] = Colors.red;
+                          text[4] = Colors.red;
+                          setState(() {});
+                          _signup[3] = false;
+                          _signup[4] = false;
+                          if (email_valid)
+                            Fluttertoast.showToast(
+                                msg: 'Passwords do not match');
+                        } else {
+                          bg[3] = kPrimaryLightColor;
+                          border[3] = kPrimaryLightColor;
+                          text[3] = kPrimaryColor;
+                          bg[4] = kPrimaryLightColor;
+                          border[4] = kPrimaryLightColor;
+                          text[4] = kPrimaryColor;
+                          setState(() {});
+                          _signup[3] = true;
+                          _signup[4] = true;
+                        }
                       }
-                    }
 
-                    if (_signup[0] && _signup[1] && _signup[2] && _signup[3] &&
-                        _signup[4]) {
-                      setState(() {
-                        loading = true;
-                      });
-                      print("3");
-                      await submit();
-                      print('enter 2');
-                      setState(() {
+                      if (_signup[0] &&
+                          _signup[1] &&
+                          _signup[2] &&
+                          _signup[3] &&
+                          _signup[4]) {
+                        setState(() {
+                          loading = true;
+                        });
+                        print("3");
+                        var string = await submit();
+                        if (string == null) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => VerificationScreen(
+                                email: _email,
+                                password: _password,
+                                name: _name,
+                              ),
+                            ),
+                            (Route<dynamic> route) => false,
+                          );
+                        }
+                        writeData();
+                        print('enter 2');
+                        setState(() {
+                          loading = false;
+                        });
+                        print('3');
+                        print("done");
                         loading = false;
-                      });
-                      await writeData();
-                      print('3');
-                      print("done");
-                      await logout();
-                      loading = false;
-                      if (log) {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) =>
-                              LoginScreen(widget.key)),
-                              (Route<dynamic> route) => false,
-                        );
+                        if (log) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen(widget.key)),
+                            (Route<dynamic> route) => false,
+                          );
 //                      }
+                        }
                       }
-                    };
-                  }
-                  ),
+                      ;
+                    }),
                 SizedBox(height: size.height * 0.03),
                 AlreadyHaveAnAccountCheck(
                   login: false,
@@ -409,14 +458,15 @@ class _Body1State extends State<Body1> {
                     );
                   },
                 ),
-                SizedBox(height: 20.0,),
+                SizedBox(
+                  height: 20.0,
+                ),
               ],
             ),
-            (loading) ? indicator(): empty(),
+            (loading) ? indicator() : empty(),
           ],
         ),
       ),
     );
   }
-
 }
