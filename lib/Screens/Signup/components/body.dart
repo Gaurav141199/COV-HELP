@@ -153,15 +153,8 @@ class _Body1State extends State<Body1> {
         uid =
             await auth.createUserWithEmailAndPassword(_email, _password, _name);
         if (uid != null) {
-          print(uid);
-          setState(() {
-            one = true;
-          });
           return uid;
         } else {
-          setState(() {
-            one = false;
-          });
           return null;
         }
       } catch (e) {
@@ -174,24 +167,22 @@ class _Body1State extends State<Body1> {
         } else {
           Fluttertoast.showToast(msg: 'Try Again.');
         }
-        setState(() {
-          one = false;
-        });
+
         return null;
       }
     }
 
     final Database = FirebaseDatabase.instance.reference().child('users');
 
-    void writeData() async {
-      print(uid);
-      await Database.child(uid).set({
-        'name': _name,
-        'blood': blood,
-        'email': _email,
-      });
-      log = true;
-    }
+    // void writeData() async {
+    //   print(uid);
+    //   await Database.child(uid).set({
+    //     'name': _name,
+    //     'blood': blood,
+    //     'email': _email,
+    //   });
+    //   log = true;
+    // }
 
     void logout() async {
       await Provider.of(context).auth.signOut();
@@ -233,49 +224,49 @@ class _Body1State extends State<Body1> {
                     print(_name);
                   },
                 ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                  height: 60,
-                  width: size.width * 0.8,
-                  decoration: BoxDecoration(
-                    color: bg[1],
-                    border: Border.all(
-                      color: border[1],
-                    ),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(29),
-                    ),
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 0.0),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          items: blood_group_list,
-                          onChanged: (_value) {
-                            blood = _value;
-                            check_list[1] = true;
-                            setState(() {});
-                          },
-                          hint: TextField(
-                            cursorColor: kPrimaryColor,
-                            decoration: InputDecoration(
-                              icon: Icon(
-                                Icons.local_hospital,
-                                color: text[1],
-                              ),
-                              hintText: (check_list[1]) ? blood : 'Blood Group',
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // Container(
+                //   margin: EdgeInsets.symmetric(vertical: 10),
+                //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                //   height: 60,
+                //   width: size.width * 0.8,
+                //   decoration: BoxDecoration(
+                //     color: bg[1],
+                //     border: Border.all(
+                //       color: border[1],
+                //     ),
+                //     borderRadius: BorderRadius.all(
+                //       Radius.circular(29),
+                //     ),
+                //   ),
+                //   child: Center(
+                //     child: Padding(
+                //       padding: const EdgeInsets.symmetric(
+                //           vertical: 8.0, horizontal: 0.0),
+                //       child: DropdownButtonHideUnderline(
+                //         child: DropdownButton<String>(
+                //           isExpanded: true,
+                //           items: blood_group_list,
+                //           onChanged: (_value) {
+                //             blood = _value;
+                //             check_list[1] = true;
+                //             setState(() {});
+                //           },
+                //           hint: TextField(
+                //             cursorColor: kPrimaryColor,
+                //             decoration: InputDecoration(
+                //               icon: Icon(
+                //                 Icons.local_hospital,
+                //                 color: text[1],
+                //               ),
+                //               hintText: (check_list[1]) ? blood : 'Blood Group',
+                //               border: InputBorder.none,
+                //             ),
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 RoundedInputField(
                   border_color: border[2],
                   icon_color: text[2],
@@ -424,7 +415,7 @@ class _Body1State extends State<Body1> {
                             (Route<dynamic> route) => false,
                           );
                         }
-                        writeData();
+                        // writeData();
                         print('enter 2');
                         setState(() {
                           loading = false;
@@ -436,7 +427,7 @@ class _Body1State extends State<Body1> {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginScreen(widget.key)),
+                                builder: (context) => LoginScreen()),
                             (Route<dynamic> route) => false,
                           );
 //                      }
@@ -452,7 +443,7 @@ class _Body1State extends State<Body1> {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return LoginScreen(null);
+                          return LoginScreen();
                         },
                       ),
                     );

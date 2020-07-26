@@ -9,7 +9,6 @@ import 'package:cov_help/components/rounded_button.dart';
 import 'package:cov_help/Screens/constants.dart';
 import 'package:flutter_svg/svg.dart';
 
-
 class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -19,7 +18,7 @@ class Body extends StatelessWidget {
         primaryColor: kPrimaryColor,
         scaffoldBackgroundColor: Colors.white,
       ),
-home: Body1(),
+      home: Body1(),
 //      initialRoute: '/',
 //      routes: {
 //        '/': (context)=> Body1(),
@@ -28,8 +27,6 @@ home: Body1(),
     );
   }
 }
-
-
 
 class Body1 extends StatelessWidget {
   @override
@@ -63,7 +60,7 @@ class Body1 extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return LoginScreen(null);
+                      return LoginScreen();
                     },
                   ),
                 );
