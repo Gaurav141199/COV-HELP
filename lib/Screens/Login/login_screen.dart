@@ -1,19 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:cov_help/Screens/Login/components/body.dart';
+  import 'package:flutter/material.dart';
+  import 'package:cov_help/Screens/Login/components/body.dart';
 
-class LoginScreen extends StatefulWidget {
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
+  class LoginScreen extends StatefulWidget {
+    LoginScreen(key): super(key:key);
 
-class _LoginScreenState extends State<LoginScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: Body(
-        key: widget.key,
-      ),
-    );
+    @override
+    _LoginScreenState createState() => _LoginScreenState();
   }
-}
+
+  class _LoginScreenState extends State<LoginScreen> {
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        resizeToAvoidBottomPadding: false,
+        body: Body(key: widget.key,),
+      );
+    }
+
+  }

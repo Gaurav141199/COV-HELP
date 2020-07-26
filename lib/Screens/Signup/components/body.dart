@@ -1,6 +1,8 @@
 import 'package:cov_help/Screens/Signup/components/verification_screen.dart';
+import 'package:cov_help/Screens/Signup/signup_screen.dart';
 import 'package:cov_help/Screens/Welcome/welcome_screen.dart';
 import 'package:cov_help/services/authentication.dart';
+import 'package:cov_help/services/navigation_Service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +16,14 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cov_help/services/Provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
+import '../../../main.dart';
 import '../../Welcome/welcome_screen.dart';
 
 import '../../constants.dart';
+import '../../../services/routes.dart' as router;
+
+final NavigationService _navigationService = locator<NavigationService>();
 
 class Body extends StatefulWidget {
   final _key = GlobalKey();
@@ -144,6 +151,17 @@ class _Body1State extends State<Body1> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  // void unSubscribe( listener) {
+  //   for (var l in _subscribers) {
+  //     if (l == listener) _subscribers.remove(l);
+  //   }
+  // }
+
+  @override
   Widget build(BuildContext context) {
     String uid = "";
 
@@ -152,9 +170,17 @@ class _Body1State extends State<Body1> {
         final auth = Provider.of(context).auth;
         uid =
             await auth.createUserWithEmailAndPassword(_email, _password, _name);
+        print(uid);
         if (uid != null) {
+          print(uid);
+          setState(() {
+            one = true;
+          });
           return uid;
         } else {
+          setState(() {
+            one = false;
+          });
           return null;
         }
       } catch (e) {
@@ -165,24 +191,25 @@ class _Body1State extends State<Body1> {
             'The email address is already in use by another account.') {
           Fluttertoast.showToast(msg: 'Email Already exists');
         } else {
-          Fluttertoast.showToast(msg: 'Try Again.');
+          print(e.message);
+          Fluttertoast.showToast(msg: 'Try Again11.');
         }
-
-        return null;
+        loading = false;
+        return 'NO';
       }
     }
 
     final Database = FirebaseDatabase.instance.reference().child('users');
 
-    // void writeData() async {
-    //   print(uid);
-    //   await Database.child(uid).set({
-    //     'name': _name,
-    //     'blood': blood,
-    //     'email': _email,
-    //   });
-    //   log = true;
-    // }
+    void writeData() async {
+      print(uid);
+      await Database.child(uid).set({
+        'name': _name,
+        'blood': blood,
+        'email': _email,
+      });
+      log = true;
+    }
 
     void logout() async {
       await Provider.of(context).auth.signOut();
@@ -224,49 +251,49 @@ class _Body1State extends State<Body1> {
                     print(_name);
                   },
                 ),
-                // Container(
-                //   margin: EdgeInsets.symmetric(vertical: 10),
-                //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                //   height: 60,
-                //   width: size.width * 0.8,
-                //   decoration: BoxDecoration(
-                //     color: bg[1],
-                //     border: Border.all(
-                //       color: border[1],
-                //     ),
-                //     borderRadius: BorderRadius.all(
-                //       Radius.circular(29),
-                //     ),
-                //   ),
-                //   child: Center(
-                //     child: Padding(
-                //       padding: const EdgeInsets.symmetric(
-                //           vertical: 8.0, horizontal: 0.0),
-                //       child: DropdownButtonHideUnderline(
-                //         child: DropdownButton<String>(
-                //           isExpanded: true,
-                //           items: blood_group_list,
-                //           onChanged: (_value) {
-                //             blood = _value;
-                //             check_list[1] = true;
-                //             setState(() {});
-                //           },
-                //           hint: TextField(
-                //             cursorColor: kPrimaryColor,
-                //             decoration: InputDecoration(
-                //               icon: Icon(
-                //                 Icons.local_hospital,
-                //                 color: text[1],
-                //               ),
-                //               hintText: (check_list[1]) ? blood : 'Blood Group',
-                //               border: InputBorder.none,
-                //             ),
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  height: 60,
+                  width: size.width * 0.8,
+                  decoration: BoxDecoration(
+                    color: bg[1],
+                    border: Border.all(
+                      color: border[1],
+                    ),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(29),
+                    ),
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 0.0),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          items: blood_group_list,
+                          onChanged: (_value) {
+                            blood = _value;
+                            check_list[1] = true;
+                            setState(() {});
+                          },
+                          hint: TextField(
+                            cursorColor: kPrimaryColor,
+                            decoration: InputDecoration(
+                              icon: Icon(
+                                Icons.local_hospital,
+                                color: text[1],
+                              ),
+                              hintText: (check_list[1]) ? blood : 'Blood Group',
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 RoundedInputField(
                   border_color: border[2],
                   icon_color: text[2],
@@ -402,6 +429,7 @@ class _Body1State extends State<Body1> {
                         });
                         print("3");
                         var string = await submit();
+                        print("computed");
                         if (string == null) {
                           Navigator.pushAndRemoveUntil(
                             context,
@@ -414,24 +442,37 @@ class _Body1State extends State<Body1> {
                             ),
                             (Route<dynamic> route) => false,
                           );
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: 'Something went wrong. Try Again.');
+                          locator<NavigationService>()
+                              .navigateTo(router.SignupRoute);
+                          // Navigator.pop(
+                          //   context,
+                          //   MaterialPageRoute(
+
+                          //     builder: (context) => WelcomeScreen(),
+                          //   ),
+                          //   (Route<dynamic> route) => false,
+                          // );
                         }
-                        // writeData();
-                        print('enter 2');
-                        setState(() {
-                          loading = false;
-                        });
-                        print('3');
-                        print("done");
-                        loading = false;
-                        if (log) {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginScreen()),
-                            (Route<dynamic> route) => false,
-                          );
-//                      }
-                        }
+//                        writeData();
+//                        print('enter 2');
+//                        setState(() {
+//                          loading = false;
+//                        });
+//                        print('3');
+//                        print("done");
+//                        loading = false;
+//                        if (log) {
+//                          Navigator.pushAndRemoveUntil(
+//                            context,
+//                            MaterialPageRoute(
+//                                builder: (context) => LoginScreen(widget.key)),
+//                            (Route<dynamic> route) => false,
+//                          );
+////                      }
+//                        }
                       }
                       ;
                     }),
@@ -443,7 +484,7 @@ class _Body1State extends State<Body1> {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return LoginScreen();
+                          return LoginScreen(null);
                         },
                       ),
                     );

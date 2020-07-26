@@ -16,12 +16,14 @@ class Cancel extends StatefulWidget {
 }
 
 class _CancelState extends State<Cancel> {
+
   bool check_prev = false;
   Future<String> _future;
   String time2;
   bool stop_loading = false;
 
-  void check1() async {
+
+  void check1() async{
     final Database = FirebaseDatabase.instance.reference().child('users');
     print('hi');
     try {
@@ -30,36 +32,38 @@ class _CancelState extends State<Cancel> {
         time2 = datasnapshot.value['time'];
         if (datasnapshot.value['time'] != null) {
           check_prev = true;
-        } else
-          check_prev = false;
+        }
+        else check_prev = false;
         print(datasnapshot.value);
         print(datasnapshot.value['time']);
         print(check_prev);
       });
-    } catch (e) {
+    }catch(e){
       print("error" + e);
     }
     stop_loading = true;
   }
 
-  Future<String> check() async {
-    // await check1();
+  Future<String> check() async{
+    await check1();
     return "Success";
   }
 
-  void initState() {
+  void initState(){
     _future = check();
   }
-
-  @override
+    @override
   Widget build(BuildContext context) {
+
+
+
     return Container(
       child: FutureBuilder(
-          future: _future,
-          builder: (context, snapshot) {
+          future : _future,
+          builder : (context, snapshot){
 //            print(snapshot);
 
-            if (snapshot.hasData) {
+            if(snapshot.hasData) {
               if (check_prev) {
                 return RoundedButton(
                   text: "CANCEL DONATION AT PLASMA BANK",
@@ -67,20 +71,24 @@ class _CancelState extends State<Cancel> {
                     widget.onTap();
                   },
                 );
-              } else {
+              }
+              else{
                 return Container();
               }
-            } else {
-              if (stop_loading) {
+            }
+            else{
+              if(stop_loading){
                 return Container();
-              } else {
+              }
+              else {
                 return SpinKitCubeGrid(
                   color: kPrimaryColor,
                   size: 50,
                 );
               }
             }
-          }),
+          }
+      ),
     );
   }
 }

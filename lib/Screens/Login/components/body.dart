@@ -54,7 +54,7 @@ class Body extends StatefulWidget {
 
 void showToast() {
   Fluttertoast.showToast(
-      msg: 'Wrong Email/Password',
+    msg: 'Wrong Email/Password',
   );
 }
 
