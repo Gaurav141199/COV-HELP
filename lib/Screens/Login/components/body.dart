@@ -1,7 +1,9 @@
 import 'dart:ui';
+import 'package:cov_help/main.dart';
 import 'package:cov_help/services/User.dart';
 import 'package:cov_help/Screens/Forgot_Password/Forgot_Password.dart';
 import 'package:cov_help/Screens/constants.dart';
+import 'package:cov_help/services/navigation_Service.dart';
 import 'package:flutter/material.dart';
 import 'package:cov_help/Screens/Login/components/background.dart';
 import 'package:cov_help/Screens/Signup/signup_screen.dart';
@@ -15,6 +17,7 @@ import 'package:cov_help/Screens/main_page/main_page.dart';
 import 'package:cov_help/services/Provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
+import '../../../services/routes.dart' as router;
 
 class indicator extends StatelessWidget {
   @override
@@ -22,7 +25,8 @@ class indicator extends StatelessWidget {
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-      child: Center(child: SpinKitDoubleBounce(
+      child: Center(
+          child: SpinKitDoubleBounce(
         color: kPrimaryColor,
         size: 50.0,
       )),
@@ -39,9 +43,6 @@ class empty extends StatelessWidget {
     );
   }
 }
-
-
-
 
 class Body extends StatefulWidget {
   const Body({
@@ -64,8 +65,6 @@ class main extends StatefulWidget {
 }
 
 class _mainState extends State<main> {
-
-
   String name;
 
   String uid;
@@ -83,7 +82,7 @@ class _mainState extends State<main> {
   Color email_icon_color = kPrimaryColor;
   Color password_icon_colour = kPrimaryColor;
 
-  Future<String> submit() async{
+  Future<String> submit() async {
     final auth = Provider.of(context).auth;
     try {
       setState(() {
@@ -91,30 +90,32 @@ class _mainState extends State<main> {
       });
       uid = await auth.signInWithEmailAndPassword(email, password);
       name = await auth.getUserName();
-    }catch (e) {
+    } catch (e) {
       setState(() {
         loading = false;
       });
-      if(e.message == 'There is no user record corresponding to this identifier. The user may have been deleted.'){
+      if (e.message ==
+          'There is no user record corresponding to this identifier. The user may have been deleted.') {
         Fluttertoast.showToast(
           msg: 'Incorrect Email/Password',
         );
         setState(() {
           forgot_password = true;
         });
-      }else if(e.message == 'The password is invalid or the user does not have a password.'){
+      } else if (e.message ==
+          'The password is invalid or the user does not have a password.') {
         Fluttertoast.showToast(
           msg: 'Incorrect Password',
         );
         setState(() {
           forgot_password = true;
         });
-      }else if(e.message == 'A network error (such as timeout, interrupted connection or unreachable host) has occurred.'){
+      } else if (e.message ==
+          'A network error (such as timeout, interrupted connection or unreachable host) has occurred.') {
         Fluttertoast.showToast(
           msg: 'Please try later',
         );
-      }
-      else {
+      } else {
         Fluttertoast.showToast(
           msg: 'Problem in Connection',
         );
@@ -122,19 +123,20 @@ class _mainState extends State<main> {
       print(e);
       return null;
     }
-    if(uid == 'NO'){
+    if (uid == 'NO') {
       Fluttertoast.showToast(
         msg: 'Email not verified',
       );
       setState(() {
         loading = false;
       });
-    }else {
+    } else {
       log = true;
     }
     print(log);
     print(uid);
   }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -182,7 +184,7 @@ class _mainState extends State<main> {
                   press: () async {
                     print(email);
                     email = email.trim();
-                    if(!EmailValidator.validate(email)){
+                    if (!EmailValidator.validate(email)) {
                       Fluttertoast.showToast(
                         msg: 'Email Format incorrect',
                       );
@@ -191,33 +193,36 @@ class _mainState extends State<main> {
                         email_color = Colors.white;
                         email_icon_color = Colors.red;
                       });
-                      if(password.length == 0){
+                      if (password.length == 0) {
                         setState(() {
                           password_color = Colors.white;
                           password_icon_colour = Colors.red;
                           password_color_border = Colors.red;
                         });
                       }
-                    }
-                    else {
+                    } else {
                       setState(() {
                         email_color_border = kPrimaryLightColor;
                         email_color = kPrimaryLightColor;
                         email_icon_color = kPrimaryColor;
                       });
-                      if(password.length > 0) {
+                      if (password.length > 0) {
                         await submit();
                         user1.uid = uid;
                         user1.email = email;
                         user1.name = name;
                         if (log) {
                           Fluttertoast.showToast(msg: 'Login Successful');
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Main_page(name: user1.name,email: user1.email,uid: user1.uid)),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => Main_page(name: user1.name,email: user1.email,uid: user1.uid)),
+                          // );
+                          locator<NavigationService>().navigateTo(
+                              router.HomeRoute,
+                              arguments: ScreenArguments(
+                                  user1.name, user1.email, user1.uid, null));
                         }
-                      }else{
+                      } else {
                         setState(() {
                           password_color = Colors.white;
                           password_icon_colour = Colors.red;
@@ -231,31 +236,29 @@ class _mainState extends State<main> {
                   },
                 ),
                 SizedBox(height: size.height * 0.005),
-                (forgot_password) ?
-                GestureDetector(
-                  onTap: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return Forgot_Password();
+                (forgot_password)
+                    ? GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return Forgot_Password();
+                              },
+                            ),
+                          );
                         },
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        height: 0,
+                        width: 0,
                       ),
-                    );
-                  },
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-
-                  ),
-                ):
-                Container(
-                  height: 0,
-                  width: 0,
-                ),
-
                 SizedBox(height: size.height * 0.01),
                 AlreadyHaveAnAccountCheck(
                   press: () {
@@ -273,12 +276,12 @@ class _mainState extends State<main> {
             ),
           ),
         ),
-        (loading) ? indicator():empty(),
+        (loading) ? indicator() : empty(),
       ],
-    );;
+    );
+    ;
   }
 }
-
 
 class _BodyState extends State<Body> {
   @override

@@ -1,6 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-//import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -10,12 +8,6 @@ class AuthService {
         (FirebaseUser user) => user?.uid,
       );
 
-  // void unSubscribe(AuthStateListener listener) {
-  //   for (var l in _subscribers) {
-  //     if (l == listener) _subscribers.remove(l);
-  //   }
-  // }
-
   //Get User
   Future getUser() async {
     return await _firebaseAuth.currentUser();
@@ -23,24 +15,43 @@ class AuthService {
 
   // GET UID
   Future<String> getCurrentUID() async {
-    return (await _firebaseAuth.currentUser()).uid;
+    var user = await _firebaseAuth.currentUser();
+    if (user != null) {
+      return user.uid;
+    } else {
+      return null;
+    }
   }
 
   Future checkVerified() async {
-    return (await _firebaseAuth.currentUser()).isEmailVerified;
+    var user = await _firebaseAuth.currentUser();
+    if (user != null) {
+      return user.isEmailVerified;
+    } else {
+      return null;
+    }
   }
 
   //Get email
   Future<String> getEmail() async {
-    return (await _firebaseAuth.currentUser()).email;
+    var user = await _firebaseAuth.currentUser();
+    if (user != null) {
+      return user.email;
+    } else {
+      return null;
+    }
   }
 
   //Get name
 
   Future<String> getUserName() async {
-    String name = (await _firebaseAuth.currentUser()).displayName;
-    print(name);
-    return name;
+    var user = await _firebaseAuth.currentUser();
+    if (user != null) {
+      var name = user.displayName;
+      print(name);
+      return name;
+    }
+    return null;
   }
 
   // Email & Password Sign Up

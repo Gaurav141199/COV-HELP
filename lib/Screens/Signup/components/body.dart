@@ -16,14 +16,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:cov_help/services/Provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get_it/get_it.dart';
 import '../../../main.dart';
-import '../../Welcome/welcome_screen.dart';
 
 import '../../constants.dart';
 import '../../../services/routes.dart' as router;
-
-final NavigationService _navigationService = locator<NavigationService>();
 
 class Body extends StatefulWidget {
   final _key = GlobalKey();
@@ -77,6 +73,7 @@ class Body1 extends StatefulWidget {
 }
 
 class _Body1State extends State<Body1> {
+  AuthService auth = AuthService();
   List<String> blood_group_list1 = [
     "O+ve",
     "O-ve",
@@ -167,20 +164,15 @@ class _Body1State extends State<Body1> {
 
     Future<String> submit() async {
       try {
-        final auth = Provider.of(context).auth;
         uid =
             await auth.createUserWithEmailAndPassword(_email, _password, _name);
         print(uid);
         if (uid != null) {
           print(uid);
-          setState(() {
-            one = true;
-          });
+
           return uid;
         } else {
-          setState(() {
-            one = false;
-          });
+          print(uid);
           return null;
         }
       } catch (e) {
@@ -431,17 +423,10 @@ class _Body1State extends State<Body1> {
                         var string = await submit();
                         print("computed");
                         if (string == null) {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => VerificationScreen(
-                                email: _email,
-                                password: _password,
-                                name: _name,
-                              ),
-                            ),
-                            (Route<dynamic> route) => false,
-                          );
+                          locator<NavigationService>().navigateTo(
+                              router.VerificationRoute,
+                              arguments: ScreenArguments(
+                                  _name, _email, string, _password));
                         } else {
                           Fluttertoast.showToast(
                               msg: 'Something went wrong. Try Again.');
