@@ -1,4 +1,5 @@
-# cov_help
+# COV-HELP
 
-Covid plasma donation app
+Covid Plasma Donation App
+
 
