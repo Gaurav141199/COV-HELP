@@ -23,9 +23,11 @@ The next page has two options:-
 
 On registration you are registered as a donor in that district which is visible to the hospitals where plasma therapy is available through the website designed.
 
+On clicking "Donate plasma bank" you need to choose the available Time and date at the given hospital and you need to upload your first COVID report.
+
 On scheduling an appointment you get an option to view and cancel the appointment before 24 hrs of the booking.
 
-
+Use of API's, Firebase as Database service, built for both iOS and android and use of authentication, realtime database and storage. 
     
     
       
