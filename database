@@ -1,0 +1,30 @@
+The Database design (JSON tree structure) is as follows and carries all operations in O(1) time.
+
+Users:
+  uid:
+    name: Gaurav
+    blood_group: B+
+    state:  XYZ
+    district: ABC
+    phone_no: 0987654321
+    email: abc@mail.com
+    time:1-3PM
+    date: 20-08-2020
+    hid: hospital_id_1
+Donors:
+  State1:
+    District1: 
+      uid1
+      uid2
+  State2:
+    District2:
+      uid3
+      uid4
+User_list:
+  hid1:
+    uid1
+    uid2
+    uid3
+  hid2:
+    uid4
+    uid5
